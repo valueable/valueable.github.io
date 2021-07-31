@@ -1141,7 +1141,6 @@ pre .javascript .function {
   margin: 0 auto;
   max-width: 120px;
   padding: 2px;
-  border-radius: 50%;
 }
 .site-author-name {
   color: var(--text-color);
@@ -1169,7 +1168,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff7f04;
+  background: #3b8aab;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1551,6 +1550,7 @@ pre .javascript .function {
   background: rgba(255,255,255,0.9) none repeat scroll !important;
   -webkit-box-shadow: 0 0 5px rgba(202,203,203,0.5);
   -moz-box-shadow: 0 0 5px rgba(202,203,204,0.5);
+  box-shadow: 8px 5px 10px #696969;
 }
 .use-motion .pagination,
 .use-motion .comments {
@@ -2150,6 +2150,13 @@ ul.breadcrumb li + li:last-child {
 .tag-cloud a:hover {
   color: var(--link-hover-color) !important;
 }
+mjx-container[jax="CHTML"][display="true"],
+.has-jax {
+  overflow: auto hidden;
+}
+mjx-container + br {
+  display: none;
+}
 .header {
   margin: 0 auto;
   position: relative;
@@ -2573,9 +2580,11 @@ ul.breadcrumb li + li:last-child {
   }
 }
 body {
-  background: url("images/background.png");
-  background-size: cover;
+  background: url("/images/background.png");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: 50% 50%;
+}
+.main-inner {
+  opacity: 0.8;
 }
