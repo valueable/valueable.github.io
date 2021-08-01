@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="依存句法分析学习背景 由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，收到来自SpellGCN的启发，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩">
+  <meta name="description" content="依存句法分析学习背景 由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，受到来自SpellGCN的启发，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩">
 <meta property="og:type" content="article">
 <meta property="og:title" content="依存句法分析学习">
 <meta property="og:url" content="http://example.com/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Leo">
-<meta property="og:description" content="依存句法分析学习背景 由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，收到来自SpellGCN的启发，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩">
+<meta property="og:description" content="依存句法分析学习背景 由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，受到来自SpellGCN的启发，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/DEPModel.png">
 <meta property="article:published_time" content="2021-07-30T10:03:23.000Z">
-<meta property="article:modified_time" content="2021-07-31T11:55:38.494Z">
+<meta property="article:modified_time" content="2021-08-01T09:10:17.969Z">
 <meta property="article:author" content="Leo Liu">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="PaperReading">
@@ -123,17 +123,17 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">1</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">2</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">3</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-31 19:55:38" itemprop="dateModified" datetime="2021-07-31T19:55:38+08:00">2021-07-31</time>
+                <time title="修改时间：2021-08-01 17:10:17" itemprop="dateModified" datetime="2021-08-01T17:10:17+08:00">2021-08-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,13 +223,13 @@
 
       
         <h1 id="依存句法分析学习"><a href="#依存句法分析学习" class="headerlink" title="依存句法分析学习"></a>依存句法分析学习</h1><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><blockquote>
-<p>由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，收到来自<a target="_blank" rel="noopener" href="https://github.com/ACL2020SpellGCN/SpellGCN">SpellGCN</a>的启发，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩充训练数据。</p>
+<p>由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，<strong>受到来自<a target="_blank" rel="noopener" href="https://github.com/ACL2020SpellGCN/SpellGCN">SpellGCN</a>的启发</strong>，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩充训练数据。</p>
 </blockquote>
 <h3 id="想法"><a href="#想法" class="headerlink" title="想法"></a>想法</h3><blockquote>
 <p>考虑到要解决量词和名词的搭配问题，决定先从词性标注的角度出发，把一组量词-名词对找出来，但这样的问题在于量词名词间可能有很多修饰词，另一方面可能量词在名词后，如句子：“参与者可获得汽车一台。”<br>自己用规则写了半天，自以为很完备，但总有想不到的情况。</p>
 </blockquote>
 <blockquote>
-<p>在师兄提醒下尝试使用依存句法分析去解决，个人使用了LTP、HanLP等工具，都有些不尽人意。最后考虑了百度开源的<a target="_blank" rel="noopener" href="https://github.com/baidu/DDParser">DDParser</a>。基本流程如下：</p>
+<p>在师兄提醒下尝试使用依存句法分析去解决，个人使用了LTP、HanLP等工具，都有些不尽人意。最后考虑了<strong>百度开源的<a target="_blank" rel="noopener" href="https://github.com/baidu/DDParser">DDParser</a>项目</strong>。基本流程如下：</p>
 </blockquote>
 <ul>
 <li>先用百度的LAC分词工具进行分词，这里也需要用到分词后的词性。</li>
@@ -237,7 +237,7 @@
 <li>feed入ernie-lstm模型并获取各个词的head（关系对象）以及关系。  </li>
 </ul>
 <blockquote>
-<p>DDParser项目参考的是2017年的ICLR<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1611.01734">《Deep Biaffine Attention for Neural Dependency Parsing》</a>，于是顺藤摸瓜，看看其依存句法分析的思路。  </p>
+<p>DDParser项目参考的是2017年的<strong>ICLR<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1611.01734">《Deep Biaffine Attention for Neural Dependency Parsing》</a>一文</strong>，于是顺藤摸瓜，看看其依存句法分析的思路。  </p>
 </blockquote>
 <h3 id="论文解读"><a href="#论文解读" class="headerlink" title="论文解读"></a>论文解读</h3><blockquote>
 <p>这篇论文是斯坦福专攻Dependency Parsing的博士生Dozat在ICLR 2017上的论文，拿到了graph-based方法中的最高分，改进版还拿到了CoNLL 2017 Shared Task的第一。基于图的依存句法分析需要解决两个问题：1、哪两个节点连依存弧；2、弧的标签是什么。NN方法使用分类器来解决这两个问题，记feature detector得到的特征向量为$r_i$。  </p>
@@ -294,6 +294,13 @@
 
 
         
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/" rel="next" title="对比学习">
+      对比学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
     
   </article>
@@ -367,20 +374,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
