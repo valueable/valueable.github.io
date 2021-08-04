@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/NLP.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/NLP.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型论文介绍 这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。    论文地址：Paper项目地址：Github  目前，预训练语言模型在自然">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读:ChineseBERT">
+<meta property="og:url" content="http://example.com/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/index.html">
+<meta property="og:site_name" content="Leo">
+<meta property="og:description" content="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型论文介绍 这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。    论文地址：Paper项目地址：Github  目前，预训练语言模型在自然">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/ChineseBERT.png">
+<meta property="og:image" content="http://example.com/images/ChineseBERT-1.png">
+<meta property="og:image" content="http://example.com/images/ChineseBERT-2.png">
+<meta property="og:image" content="http://example.com/images/ChineseBERT-3.png">
+<meta property="article:published_time" content="2021-08-04T06:05:53.000Z">
+<meta property="article:modified_time" content="2021-08-04T07:41:03.292Z">
+<meta property="article:author" content="Leo Liu">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="PaperReading">
+<meta property="article:tag" content="日常学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/ChineseBERT.png">
+
+<link rel="canonical" href="http://example.com/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文阅读:ChineseBERT | Leo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Leo Liu">
+      <meta itemprop="description" content="to be valuable">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文阅读:ChineseBERT
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-08-04 14:05:53 / 修改时间：15:41:03" itemprop="dateCreated datePublished" datetime="2021-08-04T14:05:53+08:00">2021-08-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">对比学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型"><a href="#论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型" class="headerlink" title="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型"></a>论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型</h1><h2 id="论文介绍"><a href="#论文介绍" class="headerlink" title="论文介绍"></a>论文介绍</h2><blockquote>
+<p>这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。  </p>
+</blockquote>
+<p>论文地址：<a href="https://link.zhihu.com/?target=https://aclanthology.org/2021.acl-long.161/">Paper</a><br>项目地址：<a href="https://link.zhihu.com/?target=https://github.com/ShannonAI/ChineseBert">Github</a></p>
+<blockquote>
+<p>目前，预训练语言模型在自然语言处理领域取得了显著地效果。但是由于BERT等预训练模式最初为英文设计，对于中文来说，<strong>汉语是一种符号语言，字符的符号包含一些额外的语义信息</strong>，因此，原始的预训练语言模型的形式缺失了字形信息和拼音信息两个重要的信息。<br>字形背后蕴含着丰富的语义，<strong>可以增强汉语自然语言模型的表现力</strong>。例如，“液”、“河”和“湖”都有“氵”，表示这些字符都与“水”的语义相关。<br>拼音，一个汉字的罗马化序列表示其发音，在建模语义和语法信息是至关重要的，同样的汉字在不同的读音下，有着不同的涵义。例如： “乐”字，读“yuè”时表示音乐，读“lè” 时表示快乐。<br>该论文将字形和拼音信息融入到预训练语言模型中，在中文多个领域（机器阅读理解、自然语言推理、文本分类、句对匹配、命名实体识别和分词任务上）都达到了SOTA。<br>下面主要针对ChineseBERT模型的模型结构、预训练设置以及结果分析进行详细介绍，配以我个人对其源码的一些薄见。</p>
+</blockquote>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><blockquote>
+<p>模型整体结构如下，模型将字符嵌入（char embedding）、字形嵌入（glyph embedding）和拼音嵌入（pinyin embedding）进行拼接起来；然后通过融合层，得到一个d维融合嵌入（fusion embedding）；最后将其与位置嵌入（position embedding）、片段嵌入（segment embedding）相加，形成Transformer-Encoder层的输入。<br>由于预训练时没有使用NSP任务，因此模型结构图省略了片段嵌入（segment embedding）。实际上下游任务输入为多个段落时（例如：文本匹配、阅读理解等任务），是采用了segment embedding，详细见：fusion_embedding.py文件的34行。<br><img src="/images/ChineseBERT.png" alt="png"></p>
+</blockquote>
+<h3 id="Char-embedding"><a href="#Char-embedding" class="headerlink" title="Char embedding"></a>Char embedding</h3><blockquote>
+<p>字符嵌入与原始BERT模型中的token embedding一致，仅在字符粒度上进行embedding。</p>
+</blockquote>
+<h3 id="Glyph-embedding"><a href="#Glyph-embedding" class="headerlink" title="Glyph embedding"></a>Glyph embedding</h3><blockquote>
+<p>字形嵌入采用三种中文字体（仿宋、行楷和隶书）。先将每个汉字用以24<em>24的向量表示，然后做flattern操作，最后将该汉字的三种字体的flattern结果做拼接，这样获得的特征维度为24</em>24*3=1728，在经过一个linear将特征放缩到hidden_state的维度。<br><img src="/images/ChineseBERT-1.png" alt="png"></p>
+</blockquote>
+<h3 id="Pinyi-embedding"><a href="#Pinyi-embedding" class="headerlink" title="Pinyi embedding"></a>Pinyi embedding</h3><blockquote>
+<p>拼音嵌入首先使用pypinyin将每个汉字的拼音转化为罗马化字的字符序列，其中也包含了音调。比如对汉字“猫”，其拼音字符序列就是“mao1”。对于多音字如“乐”，pypinyin能够非常准确地识别当前上下文中正确的拼音，因此ChineseBERT直接使用pypinyin给出的结果。<br>处理过程如下：</p>
+</blockquote>
+<ul>
+<li>embedding -&gt; [bs,sentence_length,pinyin_locs,embed_size]</li>
+<li>view, permute, -&gt; [(bs*sentence_length), embed_size, pinyin_locs]</li>
+<li>conv1d -&gt; [(bs*sentence_length), pinyin_out_dim, H=pinyin_locs-1]</li>
+<li>max_pool1d -&gt; [(bs*sentence_length),pinyin_out_dim,1]</li>
+<li>view [bs,sentence_length,pinyin_out_dim]  </li>
+</ul>
+<blockquote>
+<p><img src="/images/ChineseBERT-2.png" alt="png"></p>
+</blockquote>
+<h3 id="Fusion-embedding"><a href="#Fusion-embedding" class="headerlink" title="Fusion embedding"></a>Fusion embedding</h3><blockquote>
+<p>将汉字的字嵌入、字形嵌入与拼音嵌入拼接在一起，然后经过一个全连接层，就得到了该汉字对应的融合嵌入。每个汉字对应的融合嵌入与位置嵌入相加，再加之layernorm，dropout防止过拟合，就是每个汉字给模型的输入。模型的输出就是每个汉字对应的高维向量表征，基于该向量表征对模型进行预训练。<br><img src="/images/ChineseBERT-3.png" alt="png"></p>
+</blockquote>
+<h2 id="Pretraining-setup"><a href="#Pretraining-setup" class="headerlink" title="Pretraining setup"></a>Pretraining setup</h2><h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><blockquote>
+<p>数据来自<a target="_blank" rel="noopener" href="https://commoncrawl.org/">CommonCrawl</a>。在经过数据清洗后，用于预训练ChineseBERT的数据规模为约4B个汉字。并在全词掩码时使用LTP工具进行词语识别。</p>
+</blockquote>
+<h3 id="Masking-strategies"><a href="#Masking-strategies" class="headerlink" title="Masking strategies"></a>Masking strategies</h3><blockquote>
+<p>在ChineseBERT模型中，使用全词掩码（Whole Word Masking，WWM）和字符掩码（Char Masking，CM）两种策略。<br>字符掩码，即对单独的字符进行MASK；全词掩码，即对一个词语中所有的字符进行MASK。</p>
+</blockquote>
+<h3 id="Pretraining-details"><a href="#Pretraining-details" class="headerlink" title="Pretraining details"></a>Pretraining details</h3><blockquote>
+<p>ChineseBERT模型与原始BERT模型结构不同，因此，没有加载原始模型的参数，而是从头进行预训练的。为了解决长短依赖的问题，在训练过程中，采用packed input和single input交替训练，<strong>比例为9:1</strong>，其中single input为一个单句，packed input由总长度不超过512字符的多个单句拼接而成。并且90%的概率进行全字掩码，10%的概率进行字符掩码。词语或字符的mask概率为15%，80%的概率将mask的字符使用[MASK]替换，10%的概率将mask的字符使用随机字符替换，10%的概率将mask的字符保持不变。采用了动态掩码策略来避免数据的重复训练。<br><strong>Base与Large模型的层数与原始BERT一致，分别是12层和24层，输入维度和头数分别为768/12和1024/16。Base模型训练了500K步，学习率为1e-4，warmup步数为20k，batch大小为3.2K。Base模型训练280K步，学习率为3e-4，warmup步数为90k，batch大小为8K</strong>。</p>
+</blockquote>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><p>详见论文对应章节</p>
+<h2 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h2><blockquote>
+<p>Github中给了详细的代码，可以直接调用，具体如下：</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets.bert_dataset <span class="keyword">import</span> BertDataset</span><br><span class="line"><span class="keyword">from</span> models.modeling_glycebert <span class="keyword">import</span> GlyceBertModel</span><br><span class="line">bert_path = <span class="string">&quot;&quot;</span></span><br><span class="line">tokenizer = BertDataset(bert_path)</span><br><span class="line">chinese_bert = GlyceBertModel.from_pretrained(bert_path )</span><br><span class="line">sentence = <span class="string">&#x27;我喜欢猫&#x27;</span></span><br><span class="line">input_ids, pinyin_ids = tokenizer.tokenize_sentence(sentence)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;input_ids:&quot;</span>, input_ids)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;pinyin_ids:&quot;</span>, pinyin_ids)</span><br><span class="line"></span><br><span class="line">length = input_ids.shape[<span class="number">0</span>]</span><br><span class="line">input_ids = input_ids.view(<span class="number">1</span>, length)</span><br><span class="line">pinyin_ids = pinyin_ids.view(<span class="number">1</span>, length, <span class="number">8</span>)</span><br><span class="line">output_hidden = chinese_bert.forward(input_ids, pinyin_ids)[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;output_hidden:&quot;</span>, output_hidden)</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>在预训练时候，该论文丢弃了SOP或NSP任务，有一些疑惑，在实验中也没有提到；并且模型是从头训练也比较奇怪，虽然说embedding层不一样，但是transformer-encoder层的参数还是可以用的。<br>​增加字形和拼音特征的思路还是比较正的，并且评测数据均为中文数据。也正是因为这部分，我觉得像中文拼写纠错里面的SpellGCN所做的工作，这才引起了对本论文的兴趣。<br>总之，在后续做模型融合时，多了一个可用模型。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"># NLP</a>
+              <a href="/tags/PaperReading/" rel="tag"># PaperReading</a>
+              <a href="/tags/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/" rel="tag"># 日常学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/" rel="prev" title="对比学习">
+      <i class="fa fa-chevron-left"></i> 对比学习
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ACL2021-ChineseBERT%EF%BC%9A%E8%9E%8D%E5%90%88%E5%AD%97%E5%BD%A2%E4%B8%8E%E6%8B%BC%E9%9F%B3%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%AD%E6%96%87%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">论文介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Model"><span class="nav-number">1.2.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Char-embedding"><span class="nav-number">1.2.1.</span> <span class="nav-text">Char embedding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Glyph-embedding"><span class="nav-number">1.2.2.</span> <span class="nav-text">Glyph embedding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pinyi-embedding"><span class="nav-number">1.2.3.</span> <span class="nav-text">Pinyi embedding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fusion-embedding"><span class="nav-number">1.2.4.</span> <span class="nav-text">Fusion embedding</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pretraining-setup"><span class="nav-number">1.3.</span> <span class="nav-text">Pretraining setup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data"><span class="nav-number">1.3.1.</span> <span class="nav-text">Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Masking-strategies"><span class="nav-number">1.3.2.</span> <span class="nav-text">Masking strategies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pretraining-details"><span class="nav-number">1.3.3.</span> <span class="nav-text">Pretraining details</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experiments"><span class="nav-number">1.4.</span> <span class="nav-text">Experiments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Code"><span class="nav-number">1.5.</span> <span class="nav-text">Code</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leo Liu"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Leo Liu</p>
+  <div class="site-description" itemprop="description">to be valuable</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/valueable" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;valueable" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:lzh_leo@outlook.com" title="E-Mail → mailto:lzh_leo@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021-07 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo Liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
