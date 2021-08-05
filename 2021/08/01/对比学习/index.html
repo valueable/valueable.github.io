@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="对比学习学习初衷 最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。  对比学习（Contrastive Learning）：研究进展精要 内容源自知乎同名文章-对比学习（Contrastive Learning）：研究进展精要一文。Bert预训练模型，通过MLM人物的自监督学习，充分挖掘了从海量无标注文本中">
+  <meta name="description" content="对比学习学习初衷 最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对比学习">
 <meta property="og:url" content="http://example.com/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Leo">
-<meta property="og:description" content="对比学习学习初衷 最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。  对比学习（Contrastive Learning）：研究进展精要 内容源自知乎同名文章-对比学习（Contrastive Learning）：研究进展精要一文。Bert预训练模型，通过MLM人物的自监督学习，充分挖掘了从海量无标注文本中">
+<meta property="og:description" content="对比学习学习初衷 最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/contrastivelearning-pic1.png">
 <meta property="og:image" content="http://example.com/images/contrastivelearning-pic2.png">
 <meta property="og:image" content="http://example.com/images/contrastivelearning-pic4.png">
 <meta property="article:published_time" content="2021-08-01T07:33:40.000Z">
-<meta property="article:modified_time" content="2021-08-02T02:04:32.835Z">
+<meta property="article:modified_time" content="2021-08-05T07:50:08.851Z">
 <meta property="article:author" content="Leo Liu">
 <meta property="article:tag" content="日常学习">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-02 10:04:32" itemprop="dateModified" datetime="2021-08-02T10:04:32+08:00">2021-08-02</time>
+                <time title="修改时间：2021-08-05 15:50:08" itemprop="dateModified" datetime="2021-08-05T15:50:08+08:00">2021-08-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,6 +254,7 @@
         <h1 id="对比学习"><a href="#对比学习" class="headerlink" title="对比学习"></a>对比学习</h1><h3 id="学习初衷"><a href="#学习初衷" class="headerlink" title="学习初衷"></a>学习初衷</h3><blockquote>
 <p>最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。</p>
 </blockquote>
+<span id="more"></span>
 <h3 id="对比学习（Contrastive-Learning）：研究进展精要"><a href="#对比学习（Contrastive-Learning）：研究进展精要" class="headerlink" title="对比学习（Contrastive Learning）：研究进展精要"></a>对比学习（Contrastive Learning）：研究进展精要</h3><blockquote>
 <p>内容<strong>源自<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/367290573">知乎同名文章-对比学习（Contrastive Learning）：研究进展精要</a>一文</strong>。<br>Bert预训练模型，通过MLM人物的自监督学习，充分挖掘了从海量无标注文本中学习通用知识的能力，而图像领域的预训练，往往是有监督的，就是用ImageNet来进行预训练，但是在下游任务中Fine-tuning的效果，跟Bert在NLP下游任务中带来的性能提升是没法比的。<br>有监督训练的典型问题就是标注数据有限。NLP领域目前的经验是，自监督预训练使用的数据量越大，模型越复杂，那么模型能够吸收的知识越多，对下游任务来说越好。图像领域入伙技术要有质的提升，可能也必须走这条路，即：充分使用越来越大量的无标注数据，使用越来越复杂的模型，采用自监督预训练模式来从中吸取图像本身的先验知识分布，在下游任务中通过Fine-tuning，来把预训练过程学习到的知识，迁移给并提升下游任务的效果。<br>对比学习是自监督学习的一种，也就是说，不依赖标注数据，要从无标注图像中自己学习知识。我们知道，自监督学习其实在图像领域里已经被探索了很久了。总体而言，图像领域里的自监督可以分为两种类型：生成式自监督学习，判别式自监督学习。VAE和GAN是生成式自监督学习的两类典型方法，即它要求模型重建图像或者图像的一部分，这类型的任务难度相对比较高，要求像素级的重构，中间的图像编码必须包含很多细节信息。对比学习则是典型的判别式自监督学习，相对生成式自监督学习，对比学习的任务难度要低一些。目前，对比学习貌似处于“无明确定义、有指导原则”的状态，它的指导原则是：通过自动构造相似实例和不相似实例，要求习得一个表示学习模型，通过这个模型，使得相似的实例在投影空间中比较接近，而不相似的实例在投影空间中距离比较远。而如何构造相似实例，以及不相似实例，如何构造能够遵循上述指导原则的表示学习模型结构，以及如何防止模型坍塌(Model Collapse)，这几个点是其中的关键。<br>目前出现的对比学习方法已有很多，如果从防止模型坍塌的不同方法角度，我们可大致把现有方法划分为：基于负例的对比学习方法、基于对比聚类的方法、基于不对称网络结构的方法，以及基于冗余消除损失函数的方法。</p>
 </blockquote>
