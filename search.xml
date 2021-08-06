@@ -67,6 +67,69 @@
       </tags>
   </entry>
   <entry>
+    <title>论文阅读:ChineseBERT</title>
+    <url>/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/</url>
+    <content><![CDATA[<h1 id="论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型"><a href="#论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型" class="headerlink" title="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型"></a>论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型</h1><h2 id="论文介绍"><a href="#论文介绍" class="headerlink" title="论文介绍"></a>论文介绍</h2><blockquote>
+<p>这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。  </p>
+</blockquote>
+<span id="more"></span>
+<p>论文地址：<a href="https://link.zhihu.com/?target=https://aclanthology.org/2021.acl-long.161/">Paper</a><br>项目地址：<a href="https://link.zhihu.com/?target=https://github.com/ShannonAI/ChineseBert">Github</a></p>
+<blockquote>
+<p>目前，预训练语言模型在自然语言处理领域取得了显著地效果。但是由于BERT等预训练模式最初为英文设计，对于中文来说，<strong>汉语是一种符号语言，字符的符号包含一些额外的语义信息</strong>，因此，原始的预训练语言模型的形式缺失了字形信息和拼音信息两个重要的信息。<br>字形背后蕴含着丰富的语义，<strong>可以增强汉语自然语言模型的表现力</strong>。例如，“液”、“河”和“湖”都有“氵”，表示这些字符都与“水”的语义相关。<br>拼音，一个汉字的罗马化序列表示其发音，在建模语义和语法信息是至关重要的，同样的汉字在不同的读音下，有着不同的涵义。例如： “乐”字，读“yuè”时表示音乐，读“lè” 时表示快乐。<br>该论文将字形和拼音信息融入到预训练语言模型中，在中文多个领域（机器阅读理解、自然语言推理、文本分类、句对匹配、命名实体识别和分词任务上）都达到了SOTA。<br>下面主要针对ChineseBERT模型的模型结构、预训练设置以及结果分析进行详细介绍，配以我个人对其源码的一些薄见。</p>
+</blockquote>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><blockquote>
+<p>模型整体结构如下，模型将字符嵌入（char embedding）、字形嵌入（glyph embedding）和拼音嵌入（pinyin embedding）进行拼接起来；然后通过融合层，得到一个d维融合嵌入（fusion embedding）；最后将其与位置嵌入（position embedding）、片段嵌入（segment embedding）相加，形成Transformer-Encoder层的输入。<br>由于预训练时没有使用NSP任务，因此模型结构图省略了片段嵌入（segment embedding）。实际上下游任务输入为多个段落时（例如：文本匹配、阅读理解等任务），是采用了segment embedding，详细见：fusion_embedding.py文件的34行。<br><img src="/images/ChineseBERT.png" alt="png"></p>
+</blockquote>
+<h3 id="Char-embedding"><a href="#Char-embedding" class="headerlink" title="Char embedding"></a>Char embedding</h3><blockquote>
+<p>字符嵌入与原始BERT模型中的token embedding一致，仅在字符粒度上进行embedding。</p>
+</blockquote>
+<h3 id="Glyph-embedding"><a href="#Glyph-embedding" class="headerlink" title="Glyph embedding"></a>Glyph embedding</h3><blockquote>
+<p>字形嵌入采用三种中文字体（仿宋、行楷和隶书）。先将每个汉字用以24x24的向量表示，然后做flattern操作，最后将该汉字的三种字体的flattern结果做拼接，这样获得的特征维度为24x24x3=1728，在经过一个linear将特征放缩到hidden_state的维度。<br><img src="/images/ChineseBERT-1.png" alt="png"></p>
+</blockquote>
+<h3 id="Pinyi-embedding"><a href="#Pinyi-embedding" class="headerlink" title="Pinyi embedding"></a>Pinyi embedding</h3><blockquote>
+<p>拼音嵌入首先使用pypinyin将每个汉字的拼音转化为罗马化字的字符序列，其中也包含了音调。比如对汉字“猫”，其拼音字符序列就是“mao1”。对于多音字如“乐”，pypinyin能够非常准确地识别当前上下文中正确的拼音，因此ChineseBERT直接使用pypinyin给出的结果。<br>处理过程如下：</p>
+</blockquote>
+<ul>
+<li>embedding -&gt; [bs,sentence_length,pinyin_locs,embed_size]</li>
+<li>view, permute, -&gt; [(bs*sentence_length), embed_size, pinyin_locs]</li>
+<li>conv1d -&gt; [(bs*sentence_length), pinyin_out_dim, H=pinyin_locs-1]</li>
+<li>max_pool1d -&gt; [(bs*sentence_length),pinyin_out_dim,1]</li>
+<li>view [bs,sentence_length,pinyin_out_dim]  </li>
+</ul>
+<blockquote>
+<p><img src="/images/ChineseBERT-2.png" alt="png"></p>
+</blockquote>
+<h3 id="Fusion-embedding"><a href="#Fusion-embedding" class="headerlink" title="Fusion embedding"></a>Fusion embedding</h3><blockquote>
+<p>将汉字的字嵌入、字形嵌入与拼音嵌入拼接在一起，然后经过一个全连接层，就得到了该汉字对应的融合嵌入。每个汉字对应的融合嵌入与位置嵌入相加，再加之layernorm，dropout防止过拟合，就是每个汉字给模型的输入。模型的输出就是每个汉字对应的高维向量表征，基于该向量表征对模型进行预训练。<br><img src="/images/ChineseBERT-3.png" alt="png"></p>
+</blockquote>
+<h2 id="Pretraining-setup"><a href="#Pretraining-setup" class="headerlink" title="Pretraining setup"></a>Pretraining setup</h2><h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><blockquote>
+<p>数据来自<a href="https://commoncrawl.org/">CommonCrawl</a>。在经过数据清洗后，用于预训练ChineseBERT的数据规模为约4B个汉字。并在全词掩码时使用LTP工具进行词语识别。</p>
+</blockquote>
+<h3 id="Masking-strategies"><a href="#Masking-strategies" class="headerlink" title="Masking strategies"></a>Masking strategies</h3><blockquote>
+<p>在ChineseBERT模型中，使用全词掩码（Whole Word Masking，WWM）和字符掩码（Char Masking，CM）两种策略。<br>字符掩码，即对单独的字符进行MASK；全词掩码，即对一个词语中所有的字符进行MASK。</p>
+</blockquote>
+<h3 id="Pretraining-details"><a href="#Pretraining-details" class="headerlink" title="Pretraining details"></a>Pretraining details</h3><blockquote>
+<p>ChineseBERT模型与原始BERT模型结构不同，因此，没有加载原始模型的参数，而是从头进行预训练的。为了解决长短依赖的问题，在训练过程中，采用packed input和single input交替训练，<strong>比例为9:1</strong>，其中single input为一个单句，packed input由总长度不超过512字符的多个单句拼接而成。并且90%的概率进行全字掩码，10%的概率进行字符掩码。词语或字符的mask概率为15%，80%的概率将mask的字符使用[MASK]替换，10%的概率将mask的字符使用随机字符替换，10%的概率将mask的字符保持不变。采用了动态掩码策略来避免数据的重复训练。<br><strong>Base与Large模型的层数与原始BERT一致，分别是12层和24层，输入维度和头数分别为768/12和1024/16。Base模型训练了500K步，学习率为1e-4，warmup步数为20k，batch大小为3.2K。Base模型训练280K步，学习率为3e-4，warmup步数为90k，batch大小为8K</strong>。</p>
+</blockquote>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><p>详见论文对应章节</p>
+<h2 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h2><blockquote>
+<p>Github中给了详细的代码，可以直接调用，具体如下：</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets.bert_dataset <span class="keyword">import</span> BertDataset</span><br><span class="line"><span class="keyword">from</span> models.modeling_glycebert <span class="keyword">import</span> GlyceBertModel</span><br><span class="line">bert_path = <span class="string">&quot;&quot;</span></span><br><span class="line">tokenizer = BertDataset(bert_path)</span><br><span class="line">chinese_bert = GlyceBertModel.from_pretrained(bert_path )</span><br><span class="line">sentence = <span class="string">&#x27;我喜欢猫&#x27;</span></span><br><span class="line">input_ids, pinyin_ids = tokenizer.tokenize_sentence(sentence)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;input_ids:&quot;</span>, input_ids)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;pinyin_ids:&quot;</span>, pinyin_ids)</span><br><span class="line"></span><br><span class="line">length = input_ids.shape[<span class="number">0</span>]</span><br><span class="line">input_ids = input_ids.view(<span class="number">1</span>, length)</span><br><span class="line">pinyin_ids = pinyin_ids.view(<span class="number">1</span>, length, <span class="number">8</span>)</span><br><span class="line">output_hidden = chinese_bert.forward(input_ids, pinyin_ids)[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;output_hidden:&quot;</span>, output_hidden)</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>在预训练时候，该论文丢弃了SOP或NSP任务，有一些疑惑，在实验中也没有提到；并且模型是从头训练也比较奇怪，虽然说embedding层不一样，但是transformer-encoder层的参数还是可以用的。<br>​增加字形和拼音特征的思路还是比较正的，并且评测数据均为中文数据。也正是因为这部分，我觉得像中文拼写纠错里面的SpellGCN所做的工作，这才引起了对本论文的兴趣。<br>总之，在后续做模型融合时，多了一个可用模型。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>日常学习</tag>
+        <tag>PaperReading</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>依存句法分析学习</title>
     <url>/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id="依存句法分析学习"><a href="#依存句法分析学习" class="headerlink" title="依存句法分析学习"></a>依存句法分析学习</h1><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><blockquote>
@@ -132,71 +195,8 @@
       </categories>
       <tags>
         <tag>NLP</tag>
-        <tag>PaperReading</tag>
         <tag>日常学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文阅读:ChineseBERT</title>
-    <url>/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/</url>
-    <content><![CDATA[<h1 id="论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型"><a href="#论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型" class="headerlink" title="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型"></a>论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型</h1><h2 id="论文介绍"><a href="#论文介绍" class="headerlink" title="论文介绍"></a>论文介绍</h2><blockquote>
-<p>这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。  </p>
-</blockquote>
-<span id="more"></span>
-<p>论文地址：<a href="https://link.zhihu.com/?target=https://aclanthology.org/2021.acl-long.161/">Paper</a><br>项目地址：<a href="https://link.zhihu.com/?target=https://github.com/ShannonAI/ChineseBert">Github</a></p>
-<blockquote>
-<p>目前，预训练语言模型在自然语言处理领域取得了显著地效果。但是由于BERT等预训练模式最初为英文设计，对于中文来说，<strong>汉语是一种符号语言，字符的符号包含一些额外的语义信息</strong>，因此，原始的预训练语言模型的形式缺失了字形信息和拼音信息两个重要的信息。<br>字形背后蕴含着丰富的语义，<strong>可以增强汉语自然语言模型的表现力</strong>。例如，“液”、“河”和“湖”都有“氵”，表示这些字符都与“水”的语义相关。<br>拼音，一个汉字的罗马化序列表示其发音，在建模语义和语法信息是至关重要的，同样的汉字在不同的读音下，有着不同的涵义。例如： “乐”字，读“yuè”时表示音乐，读“lè” 时表示快乐。<br>该论文将字形和拼音信息融入到预训练语言模型中，在中文多个领域（机器阅读理解、自然语言推理、文本分类、句对匹配、命名实体识别和分词任务上）都达到了SOTA。<br>下面主要针对ChineseBERT模型的模型结构、预训练设置以及结果分析进行详细介绍，配以我个人对其源码的一些薄见。</p>
-</blockquote>
-<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><blockquote>
-<p>模型整体结构如下，模型将字符嵌入（char embedding）、字形嵌入（glyph embedding）和拼音嵌入（pinyin embedding）进行拼接起来；然后通过融合层，得到一个d维融合嵌入（fusion embedding）；最后将其与位置嵌入（position embedding）、片段嵌入（segment embedding）相加，形成Transformer-Encoder层的输入。<br>由于预训练时没有使用NSP任务，因此模型结构图省略了片段嵌入（segment embedding）。实际上下游任务输入为多个段落时（例如：文本匹配、阅读理解等任务），是采用了segment embedding，详细见：fusion_embedding.py文件的34行。<br><img src="/images/ChineseBERT.png" alt="png"></p>
-</blockquote>
-<h3 id="Char-embedding"><a href="#Char-embedding" class="headerlink" title="Char embedding"></a>Char embedding</h3><blockquote>
-<p>字符嵌入与原始BERT模型中的token embedding一致，仅在字符粒度上进行embedding。</p>
-</blockquote>
-<h3 id="Glyph-embedding"><a href="#Glyph-embedding" class="headerlink" title="Glyph embedding"></a>Glyph embedding</h3><blockquote>
-<p>字形嵌入采用三种中文字体（仿宋、行楷和隶书）。先将每个汉字用以24x24的向量表示，然后做flattern操作，最后将该汉字的三种字体的flattern结果做拼接，这样获得的特征维度为24x24x3=1728，在经过一个linear将特征放缩到hidden_state的维度。<br><img src="/images/ChineseBERT-1.png" alt="png"></p>
-</blockquote>
-<h3 id="Pinyi-embedding"><a href="#Pinyi-embedding" class="headerlink" title="Pinyi embedding"></a>Pinyi embedding</h3><blockquote>
-<p>拼音嵌入首先使用pypinyin将每个汉字的拼音转化为罗马化字的字符序列，其中也包含了音调。比如对汉字“猫”，其拼音字符序列就是“mao1”。对于多音字如“乐”，pypinyin能够非常准确地识别当前上下文中正确的拼音，因此ChineseBERT直接使用pypinyin给出的结果。<br>处理过程如下：</p>
-</blockquote>
-<ul>
-<li>embedding -&gt; [bs,sentence_length,pinyin_locs,embed_size]</li>
-<li>view, permute, -&gt; [(bs*sentence_length), embed_size, pinyin_locs]</li>
-<li>conv1d -&gt; [(bs*sentence_length), pinyin_out_dim, H=pinyin_locs-1]</li>
-<li>max_pool1d -&gt; [(bs*sentence_length),pinyin_out_dim,1]</li>
-<li>view [bs,sentence_length,pinyin_out_dim]  </li>
-</ul>
-<blockquote>
-<p><img src="/images/ChineseBERT-2.png" alt="png"></p>
-</blockquote>
-<h3 id="Fusion-embedding"><a href="#Fusion-embedding" class="headerlink" title="Fusion embedding"></a>Fusion embedding</h3><blockquote>
-<p>将汉字的字嵌入、字形嵌入与拼音嵌入拼接在一起，然后经过一个全连接层，就得到了该汉字对应的融合嵌入。每个汉字对应的融合嵌入与位置嵌入相加，再加之layernorm，dropout防止过拟合，就是每个汉字给模型的输入。模型的输出就是每个汉字对应的高维向量表征，基于该向量表征对模型进行预训练。<br><img src="/images/ChineseBERT-3.png" alt="png"></p>
-</blockquote>
-<h2 id="Pretraining-setup"><a href="#Pretraining-setup" class="headerlink" title="Pretraining setup"></a>Pretraining setup</h2><h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><blockquote>
-<p>数据来自<a href="https://commoncrawl.org/">CommonCrawl</a>。在经过数据清洗后，用于预训练ChineseBERT的数据规模为约4B个汉字。并在全词掩码时使用LTP工具进行词语识别。</p>
-</blockquote>
-<h3 id="Masking-strategies"><a href="#Masking-strategies" class="headerlink" title="Masking strategies"></a>Masking strategies</h3><blockquote>
-<p>在ChineseBERT模型中，使用全词掩码（Whole Word Masking，WWM）和字符掩码（Char Masking，CM）两种策略。<br>字符掩码，即对单独的字符进行MASK；全词掩码，即对一个词语中所有的字符进行MASK。</p>
-</blockquote>
-<h3 id="Pretraining-details"><a href="#Pretraining-details" class="headerlink" title="Pretraining details"></a>Pretraining details</h3><blockquote>
-<p>ChineseBERT模型与原始BERT模型结构不同，因此，没有加载原始模型的参数，而是从头进行预训练的。为了解决长短依赖的问题，在训练过程中，采用packed input和single input交替训练，<strong>比例为9:1</strong>，其中single input为一个单句，packed input由总长度不超过512字符的多个单句拼接而成。并且90%的概率进行全字掩码，10%的概率进行字符掩码。词语或字符的mask概率为15%，80%的概率将mask的字符使用[MASK]替换，10%的概率将mask的字符使用随机字符替换，10%的概率将mask的字符保持不变。采用了动态掩码策略来避免数据的重复训练。<br><strong>Base与Large模型的层数与原始BERT一致，分别是12层和24层，输入维度和头数分别为768/12和1024/16。Base模型训练了500K步，学习率为1e-4，warmup步数为20k，batch大小为3.2K。Base模型训练280K步，学习率为3e-4，warmup步数为90k，batch大小为8K</strong>。</p>
-</blockquote>
-<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><p>详见论文对应章节</p>
-<h2 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h2><blockquote>
-<p>Github中给了详细的代码，可以直接调用，具体如下：</p>
-</blockquote>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets.bert_dataset <span class="keyword">import</span> BertDataset</span><br><span class="line"><span class="keyword">from</span> models.modeling_glycebert <span class="keyword">import</span> GlyceBertModel</span><br><span class="line">bert_path = <span class="string">&quot;&quot;</span></span><br><span class="line">tokenizer = BertDataset(bert_path)</span><br><span class="line">chinese_bert = GlyceBertModel.from_pretrained(bert_path )</span><br><span class="line">sentence = <span class="string">&#x27;我喜欢猫&#x27;</span></span><br><span class="line">input_ids, pinyin_ids = tokenizer.tokenize_sentence(sentence)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;input_ids:&quot;</span>, input_ids)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;pinyin_ids:&quot;</span>, pinyin_ids)</span><br><span class="line"></span><br><span class="line">length = input_ids.shape[<span class="number">0</span>]</span><br><span class="line">input_ids = input_ids.view(<span class="number">1</span>, length)</span><br><span class="line">pinyin_ids = pinyin_ids.view(<span class="number">1</span>, length, <span class="number">8</span>)</span><br><span class="line">output_hidden = chinese_bert.forward(input_ids, pinyin_ids)[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;output_hidden:&quot;</span>, output_hidden)</span><br></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
-<p>在预训练时候，该论文丢弃了SOP或NSP任务，有一些疑惑，在实验中也没有提到；并且模型是从头训练也比较奇怪，虽然说embedding层不一样，但是transformer-encoder层的参数还是可以用的。<br>​增加字形和拼音特征的思路还是比较正的，并且评测数据均为中文数据。也正是因为这部分，我觉得像中文拼写纠错里面的SpellGCN所做的工作，这才引起了对本论文的兴趣。<br>总之，在后续做模型融合时，多了一个可用模型。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
         <tag>PaperReading</tag>
-        <tag>日常学习</tag>
       </tags>
   </entry>
   <entry>
