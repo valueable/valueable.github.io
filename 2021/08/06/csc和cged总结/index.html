@@ -20,30 +20,36 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="to be valuable">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Leo">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="csc和cged总结写在前面 暑假对接一个公文智能核稿的项目，涉及到中文文本的纠错，大体包括中文拼写纠错（csc）、中文语法纠错（cged）以及其他业务相关的细化的错误纠正。虽然毕设时做的是英语语法纠错，对纠错的实现的基本思路有个大概的把握，但是经过调研后发现中文拼写纠错较之英文有很大不同，如字音字形相近错误。因此在项目中，参考了spellgcn的思路用bert+gcn来实现中文拼写纠错；参考be">
+<meta property="og:type" content="article">
+<meta property="og:title" content="csc和cged总结">
+<meta property="og:url" content="http://example.com/2021/08/06/csc%E5%92%8Ccged%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="Leo">
-<meta property="og:description" content="to be valuable">
+<meta property="og:description" content="csc和cged总结写在前面 暑假对接一个公文智能核稿的项目，涉及到中文文本的纠错，大体包括中文拼写纠错（csc）、中文语法纠错（cged）以及其他业务相关的细化的错误纠正。虽然毕设时做的是英语语法纠错，对纠错的实现的基本思路有个大概的把握，但是经过调研后发现中文拼写纠错较之英文有很大不同，如字音字形相近错误。因此在项目中，参考了spellgcn的思路用bert+gcn来实现中文拼写纠错；参考be">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/csc.png">
+<meta property="article:published_time" content="2021-08-06T05:51:27.000Z">
+<meta property="article:modified_time" content="2021-08-06T09:19:32.715Z">
 <meta property="article:author" content="Leo Liu">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="中文拼写和语法纠错">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/csc.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/08/06/csc%E5%92%8Ccged%E6%80%BB%E7%BB%93/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Leo</title>
+  <title>csc和cged总结 | Leo</title>
   
 
 
@@ -184,9 +190,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -202,10 +209,9 @@
       <meta itemprop="name" content="Leo">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/06/csc%E5%92%8Ccged%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">csc和cged总结</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          csc和cged总结
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -238,281 +244,89 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="csc和cged总结"><a href="#csc和cged总结" class="headerlink" title="csc和cged总结"></a>csc和cged总结</h1><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><blockquote>
+        <h1 id="csc和cged总结"><a href="#csc和cged总结" class="headerlink" title="csc和cged总结"></a>csc和cged总结</h1><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><blockquote>
 <p>暑假对接一个公文智能核稿的项目，涉及到中文文本的纠错，大体包括中文拼写纠错（csc）、中文语法纠错（cged）以及其他业务相关的细化的错误纠正。<br>虽然毕设时做的是英语语法纠错，对纠错的实现的基本思路有个大概的把握，但是经过调研后发现中文拼写纠错较之英文有很大不同，如字音字形相近错误。<br>因此在项目中，参考了<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2004.14166">spellgcn</a>的思路用bert+gcn来实现中文拼写纠错；参考bert-ner框架以序列标注的思想来解决中文语法纠错问题（多词、少词、语序问题）</p>
 </blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/06/csc%E5%92%8Ccged%E6%80%BB%E7%BB%93/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Leo Liu">
-      <meta itemprop="description" content="to be valuable">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/" class="post-title-link" itemprop="url">论文阅读:ChineseBERT</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-04 14:05:53" itemprop="dateCreated datePublished" datetime="2021-08-04T14:05:53+08:00">2021-08-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-06 14:42:41" itemprop="dateModified" datetime="2021-08-06T14:42:41+08:00">2021-08-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" itemprop="url" rel="index"><span itemprop="name">论文阅读</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型"><a href="#论文阅读-ACL2021-ChineseBERT：融合字形与拼音信息的中文预训练模型" class="headerlink" title="论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型"></a>论文阅读 ACL2021| ChineseBERT：融合字形与拼音信息的中文预训练模型</h1><h2 id="论文介绍"><a href="#论文介绍" class="headerlink" title="论文介绍"></a>论文介绍</h2><blockquote>
-<p>这篇论文来自ACL2021，论文全名为ChineseBERT: Chinese Pretraining Enhanced by Glyph and Pinyin Information，即融合字形与拼音信息的中文预训练模型。  </p>
+<span id="more"></span>
+<h3 id="中文拼写纠错"><a href="#中文拼写纠错" class="headerlink" title="中文拼写纠错"></a>中文拼写纠错</h3><blockquote>
+<p>中文拼写检查需要依赖中文字形字音的知识来解决形似音近出现的错误，因此spellgcn将语音和形状相似性整合到语义空间中，其模型结构如下：  </p>
 </blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Leo Liu">
-      <meta itemprop="description" content="to be valuable">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">对比学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-01 15:33:40" itemprop="dateCreated datePublished" datetime="2021-08-01T15:33:40+08:00">2021-08-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-05 15:50:08" itemprop="dateModified" datetime="2021-08-05T15:50:08+08:00">2021-08-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">对比学习</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="对比学习"><a href="#对比学习" class="headerlink" title="对比学习"></a>对比学习</h1><h3 id="学习初衷"><a href="#学习初衷" class="headerlink" title="学习初衷"></a>学习初衷</h3><blockquote>
-<p>最近看到好多推送对比学习的公众号，包括在和师兄做AAAI时也用到了对比学习的思想，于是决定了解下对比学习。主要是为了对其有个认识，拓宽视野。</p>
+<p><img src="/images/csc.png" alt="png"> </p>
+<blockquote>
+<p>顺着这个思路，我决定做一个bert+gcn来解决中文拼写问题。</p>
 </blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/01/%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Leo Liu">
-      <meta itemprop="description" content="to be valuable">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">依存句法分析学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-30 18:03:23" itemprop="dateCreated datePublished" datetime="2021-07-30T18:03:23+08:00">2021-07-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-05 15:50:13" itemprop="dateModified" datetime="2021-08-05T15:50:13+08:00">2021-08-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">依存句法分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="依存句法分析学习"><a href="#依存句法分析学习" class="headerlink" title="依存句法分析学习"></a>依存句法分析学习</h1><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><blockquote>
-<p>由于项目需要，得分析如何解决中文句子里面量词和名词的搭配问题。之前考虑使用CSC、CGED任务中比较完善的模型去解。项目中已经用到CSC中效果比较好的BERT+GCN去解决，<strong>受到来自<a target="_blank" rel="noopener" href="https://github.com/ACL2020SpellGCN/SpellGCN">SpellGCN</a>的启发</strong>，使用GCN替代传统的MLP，从而对字音字形相似具有更好的处理。但发现对这种指定的搭配错误没什么效果，于是准备先用依存句法分析去解决，如果效果也不如预期，在考虑针对此类任务扩充训练数据。</p>
+<p><strong>gcn</strong></p>
+<blockquote>
+<p>首先构建两个相似图（邻接矩阵）：语音相似图和字形相似图。邻接矩阵需要标准化（normalize），代码如下：</p>
 </blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">normalize</span>(<span class="params">A, symmetric=<span class="literal">True</span></span>):</span></span><br><span class="line">    <span class="comment"># A = A+I</span></span><br><span class="line">    A = A + torch.eye(A.size(<span class="number">0</span>))</span><br><span class="line">    <span class="comment"># 所有节点的度</span></span><br><span class="line">    d = A.<span class="built_in">sum</span>(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> symmetric:</span><br><span class="line">        <span class="comment"># D = D^-1/2</span></span><br><span class="line">        D = torch.diag(torch.<span class="built_in">pow</span>(d + <span class="number">1e-8</span>, -<span class="number">0.5</span>))</span><br><span class="line">        <span class="keyword">return</span> D.mm(A).mm(D)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># D=D^-1</span></span><br><span class="line">        D = torch.diag(torch.<span class="built_in">pow</span>(d + <span class="number">1e-8</span>, -<span class="number">1</span>))</span><br><span class="line">        <span class="keyword">return</span> D.mm(A)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对应公式如下：<br>$$ \hat{A} = D^{-\frac{1}{2}}(A + I)D^{-\frac{1}{2}} \tag1$$<br>图卷积公式如下<br>$$ f(A, H^l) = \hat{A}H^lW_g^l  \tag2$$<br>其中W是要学习的矩阵，A是混淆集矩阵，两个字相似为1，否则为0。l代表卷积的层数。<br>为了保持提取器的原始语义，引入attention（为字形、字音、字符三个特征赋予权重）<br>$$C_l^i = \sum_{k ∈{s, p}}a_{(i,k)}^lf_k(A^k,H^l)_i \tag3$$  </p>
+</blockquote>
+<blockquote>
+<p>并且累积先前层的所有输出作为输出<br>$$H^{l+1} = C^l + \sum_{(i=0)}^lH^i \tag4$$<br><strong>项目工作流程</strong></p>
+</blockquote>
+<ul>
+<li>获取bert的embedding矩阵</li>
+<li>筛出作为图节点的word，先通过上一步的embedding做词嵌入，然后进入两层gcn得到node embedding</li>
+<li>对于在混淆集的节点，使用node embedding；否则使用bert获取embedding。最终获取gcn_embedding。</li>
+<li>用bert提取字符级特征，获取last hidden layer的输出。将此输出与gcn_embedding相乘。维度变化如下：<br>bert: (batch_size, sequence_length, hidden_size, 1)<br>gcn_embedding: (vocab_size, hidden_size)</li>
+</ul>
+<blockquote>
+<p>由于pytorch的广播机制，最终经squeeze的维度为(batch_size, sequence_length, vocab_size)。<br>最后将得到的logit取max在词表中得到对应词，即完成中文拼写纠错的过程。</p>
+</blockquote>
+<p><strong>总结</strong></p>
+<blockquote>
+<p>spellgcn以图的形式引入了字音、字形特征，并将其与传统的bert获取的字符级嵌入做融合，再做词表级别的分类。直观理解，把混淆集做成GCN，每个字不仅是它自己融合上下文特征后的embedding，在embedding里也加入了音近、形近字的影子。于是进行多分类的时候，每个混淆集里的字都更倾向于分为混淆集里的其他字。<br>可以见得，spellgcn的成功在于分析领域任务的特点，在最终输出特征上面做文章。在模型训练和调优过程中，也逐渐意识到，对于中文拼写检查，数据是十分关键的，从spellgcn单用bert基线模型的效果非常好、使用gcn锦上添花就可以看出。因此，数据增强也是不得忽视的部分。</p>
+</blockquote>
+<h3 id="中文语法纠错"><a href="#中文语法纠错" class="headerlink" title="中文语法纠错"></a>中文语法纠错</h3><blockquote>
+<p>根据需求，需要解决的是文章中的多词、少词、顺序问题。通过查阅已有的做法，决定将问题转化为一个序列标注问题：为每个词预测一个标签，对应上述错误中的一类，及对应ner中的B、I、O。<br>模型为Electra+crf。前向传播步骤如下:</p>
+</blockquote>
+<ul>
+<li>先用electra根据输入获取高维语义特征last hidden layer和低维句法特征first hidden layer，将其融合最后再与last hidden layer拼接。</li>
+<li>为防止过拟合，加入dropout并经过一个线性分类器得到logits。</li>
+<li>如果是训练阶段送入crf计算loss，否则将logits送入crf做decoder，利用viterbi算法获取最有可能的tag。</li>
+<li>crf的强大之处在于可以通过学习转移矩阵看前后的输出来判断当前输出。</li>
+</ul>
+<p><strong>总结</strong> </p>
+<blockquote>
+<p>相比于英语语法纠错，中文语法纠错的部分做的十分简单，一是因为需求所致，二是个人认为中文的纠错部分中心在csc。不过通过cged部分的学习，还是加深了对序列标注的理解，连带bert-ner的流程也熟练了。</p>
+</blockquote>
+<h3 id="量词名词搭配纠错"><a href="#量词名词搭配纠错" class="headerlink" title="量词名词搭配纠错"></a>量词名词搭配纠错</h3><blockquote>
+<p>主要是用了我之前的一篇<a target="_blank" rel="noopener" href="https://leolzh.top/2021/07/30/%E4%BE%9D%E5%AD%98%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0/">文章</a>所介绍的方法。<br>考虑到量词名词是一种搭配关系，引入依存句法分析和词性标注双重召回句子中量词-名词搭配。再根据已有词表做错误判断并选出候选集。</p>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
+<p>以上三部分的纠错都是以深度学习的方式解决的，通过这个项目，涉猎了很多新知识，包括csc，cged，dep parse，gcn，ner等，可谓受益匪浅。</p>
+</blockquote>
+
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"># NLP</a>
+              <a href="/tags/%E4%B8%AD%E6%96%87%E6%8B%BC%E5%86%99%E5%92%8C%E8%AF%AD%E6%B3%95%E7%BA%A0%E9%94%99/" rel="tag"># 中文拼写和语法纠错</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/04/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-ChineseBERT/" rel="prev" title="论文阅读:ChineseBERT">
+      <i class="fa fa-chevron-left"></i> 论文阅读:ChineseBERT
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -565,6 +379,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#csc%E5%92%8Ccged%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">csc和cged总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-number">1.0.1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E6%8B%BC%E5%86%99%E7%BA%A0%E9%94%99"><span class="nav-number">1.0.2.</span> <span class="nav-text">中文拼写纠错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E8%AF%AD%E6%B3%95%E7%BA%A0%E9%94%99"><span class="nav-number">1.0.3.</span> <span class="nav-text">中文语法纠错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8F%E8%AF%8D%E5%90%8D%E8%AF%8D%E6%90%AD%E9%85%8D%E7%BA%A0%E9%94%99"><span class="nav-number">1.0.4.</span> <span class="nav-text">量词名词搭配纠错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.0.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
