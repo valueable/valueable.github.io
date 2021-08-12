@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://example.com/images/contrastivelearning-pic2.png">
 <meta property="og:image" content="http://example.com/images/contrastivelearning-pic4.png">
 <meta property="article:published_time" content="2021-08-01T07:33:40.000Z">
-<meta property="article:modified_time" content="2021-08-05T07:50:08.851Z">
+<meta property="article:modified_time" content="2021-08-12T01:56:29.238Z">
 <meta property="article:author" content="Leo Liu">
 <meta property="article:tag" content="日常学习">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-05 15:50:08" itemprop="dateModified" datetime="2021-08-05T15:50:08+08:00">2021-08-05</time>
+                <time title="修改时间：2021-08-12 09:56:29" itemprop="dateModified" datetime="2021-08-12T09:56:29+08:00">2021-08-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,7 +261,7 @@
 <h4 id="基于负例的对比学习：以SimCLR为例"><a href="#基于负例的对比学习：以SimCLR为例" class="headerlink" title="基于负例的对比学习：以SimCLR为例"></a>基于负例的对比学习：以SimCLR为例</h4><blockquote>
 <p>之所以首先选择SimCLR来介绍，一方面是SimCLR的效果相对它提出之前的模型，效果好得比较明显；另外一方面SimCLR采取对称结构，整体相对简洁清晰，也比较容易说清楚。而且，它奠定的结构，已成为其它对比学习模型的标准构成部分，搞明白了SimCLR，再理解其它模型，相对而言会更容易一些。<br>对比学习是自监督学习，我们没有标注数据，所以需要自己构造相似数据（正例）以及不相似数据（负例）<br><img src="/images/contrastivelearning-pic1.png" alt="png"><br>如图，对于某张图片，从可能的增强操作集合$T$中，随机抽取两种：$t_1-T$及$t_2-T$，分别作用在原始图像上形成两张经过增强的新图像$&lt;x_1, x_2&gt;$,两者互为正例。训练时，batch内其他任意图像，都可作为$x_1$或$x_2$的负例。这样，对比学习希望习得某个表示模型，它能够将图片映射到某个投影空间，并在这个空间内拉近正例的距离，推远负例距离。也就是说，迫使表示模型能够忽略表面因素，学习图像的内在一致结构信息，即学会某些类型的不变性，比如遮挡不变性、旋转不变性、颜色不变性等。SimCLR证明了，如果能够同时融合多种图像增强操作，增加对比学习模型任务难度，对于对比学习效果有明显提升作用。<br>有了正例和负例，接下来需要做的是：构造一个表示学习系统，通过它将训练数据投影到某个表示空间内，并采取一定的方法，使得正例距离能够比较近，负例距离比较远。在这个对比学习的指导原则下，我们来看SimCLR是如何构造表示学习系统的。<br><img src="/images/contrastivelearning-pic2.png" alt="png"><br>我们随机从无标训练数据中取N个构成一个Batch，对于Batch里的任意图像，根据上述方法构造正例，形成两个图像增强视图：Aug1和Aug2。Aug1 和Aug2各自包含N个增强数据，并分别经过上下两个分枝，对增强图像做非线性变换，这两个分枝就是SimCLR设计出的表示学习所需的投影函数，负责将图像数据投影到某个表示空间。<br>因为上下分枝是对称的，所以我们仅以增强视图Aug1所经过的上分枝来介绍投影过程。Aug1首先经过特征编码器Encoder（一般采用ResNet做为模型结构，这里以函数 $f_θ(x)$ 代表），经CNN转换成对应的特征表示 $h_i$ 。紧随其后，是另外一个非线性变换结构Projector（由[FC-&gt;BN-&gt;ReLU-&gt;FC]两层MLP构成，这里以函数 $g_θ(·)$ 代表），进一步将特征表示 $h_i$ 映射成另外一个空间里的向量 $z_i$ 。这样，增强图像经过 $g_θ(f_θ(x))$ 两次非线性变换，就将增强图像投影到了表示空间，下分枝的Aug2过程类似。这会引发一个问题：为什么这种投影操作，要做两次非线性变换，而不是直接在Encoder后，只经过一次变换即可呢？这个问题的答案，稍后我们会给出解释。<br>对于Batch内某张图像 $x$ 来说，在Aug1和Aug2里的对应的增强后图像分别是 $x_i$ 和 $x_j$ ，那么数据对 $&lt;x_i, x_j&gt;$ 互为正例，而 $x_i$ 和Aug1及Aug2里除 $x_j$ 之外的其它任意2N-2个图像都互为负例。在经过 $g_θ(f_θ(x))$ 变换后，增强图像被投影到表示空间。在表示空间内，我们希望正例距离较近，负例距离较远。如果希望达成这一点，一般通过定义合适的损失函数来实现。在介绍损失函数前，我们首先需要一个度量函数，以判断两个向量在投影空间里的距离远近，一般采用相似性函数来作为距离度量标准。具体而言，相似性计算函数采取对表示向量L2正则后的点积或者表示向量间的Cosine相似性：</p>
 </blockquote>
-<p>$$S(z_i, z_j) = z_i^Tz_j/(||z_i||_2||z_j||_2) \tag1$$</p>
+<p>$$S(z_i, z_j) = \frac{z_i^Tz_j}{(||z_i||_2||z_j||_2)} \tag1$$</p>
 <blockquote>
 <p>SimCLR的损失函数采用InfoNCE Loss。  </p>
 </blockquote>
